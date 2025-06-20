@@ -1,0 +1,40 @@
+{
+  "imageConfig": {
+    "cmd": ["/usr/bin/myapp"],
+    "env": ["PORT=8080", "DEBUG=true"],
+    "workingDir": "/root",
+    "user": "root"
+  },
+  "extraEnv": {
+    "INIT_VERSION": "1.0.0",
+    "ENVIRONMENT": "development"
+  },
+  "tty": false,
+  "hostname": "init-container",
+  "ipConfigs": [
+    {
+      "ip": "192.168.1.100/24",
+      "gateway": "192.168.1.1/24"
+    }
+  ],
+  "etcHosts": [
+    {
+      "host": "localhost",
+      "ip": "127.0.0.1",
+      "description": "Local host"
+    }
+  ],
+  "etcResolv": {
+    "nameservers": ["8.8.8.8", "8.8.4.4"],
+    "search": ["local"],
+    "options": ["timeout:1"]
+  },
+  "mounts": [
+    {
+      "mountPath": "/tmp",
+      "devicePath": "tmpfs",
+      "fsType": "tmpfs",
+      "options": "rw,nosuid,nodev"
+    }
+  ]
+}
