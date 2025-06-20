@@ -1,0 +1,117 @@
+# GolangCI-Lint configuration for Go Init Program
+
+run:
+  timeout: 5m
+  modules-download-mode: readonly
+  go: '1.24'
+
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+
+linters:
+  enable:
+    # Default linters
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - typecheck
+    - unused
+    
+    # Additional security and code quality linters
+    - gosec        # Security issues
+    - gocritic     # Code review suggestions
+    - gocyclo      # Cyclomatic complexity
+    - gofmt        # Code formatting
+    - goimports    # Import sorting
+    - goconst      # Find repeated strings that could be constants
+    - misspell     # Spelling mistakes
+    - unparam      # Unused function parameters
+    - unconvert    # Unnecessary type conversions
+    - prealloc     # Find slice declarations that could be pre-allocated
+    - exportloopref # Loop variable captured by func literal
+    - bodyclose    # HTTP response body should be closed
+    - noctx        # HTTP request without context.Context
+    - rowserrcheck # Rows.Err of sql is checked
+    - sqlclosecheck # SQL rows/statements are closed
+    - whitespace   # Tool for detection of leading and trailing whitespace
+    - wsl          # Whitespace Linter
+    
+  disable:
+    - deadcode     # Deprecated
+    - varcheck     # Deprecated  
+    - structcheck  # Deprecated
+    - scopelint    # Deprecated
+
+linters-settings:
+  gosec:
+    confidence: medium
+    severity: medium
+    excludes:
+      - G104 # Audit errors not checked (we have errcheck for this)
+  
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - style
+      - performance
+      - experimental
+    disabled-checks:
+      - whyNoLint # We want to require lint explanations
+  
+  gocyclo:
+    min-complexity: 15
+  
+  goconst:
+    min-len: 3
+    min-occurrences: 3
+  
+  misspell:
+    locale: US
+  
+  gofmt:
+    simplify: true
+  
+  goimports:
+    local-prefixes: github.com/TheRealSibasishBehera/init_go
+
+issues:
+  exclude-rules:
+    # Exclude some linters from running on tests files
+    - path: _test\.go
+      linters:
+        - gosec
+        - goconst
+        - gocyclo
+    
+    # Exclude known linters from generated files
+    - path: ".*\\.pb\\.go"
+      linters:
+        - gocritic
+        - gosec
+        - unused
+    
+    # Exclude syscall-related security warnings for init system
+    - text: "G103: Use of unsafe calls should be audited"
+      linters:
+        - gosec
+    
+    - text: "G204: Subprocess launched with variable"
+      linters:
+        - gosec
+      
+    # Allow init function complexity for PID 1 validation
+    - path: cmd/init/main\.go
+      text: "Function 'main' has too many statements"
+      linters:
+        - gocyclo
+
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  new: false
+
+severity:
+  default-severity: error
