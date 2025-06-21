@@ -1,10 +1,10 @@
 //go:build linux
 
-package hostname
+package system
 
 import (
-	"os"
 	"golang.org/x/sys/unix"
+	"os"
 )
 
 // SetHostname sets the system hostname using unix package
@@ -16,3 +16,4 @@ func SetHostname(name string) error {
 func GetHostname() (string, error) {
 	return os.Hostname()
 }
+

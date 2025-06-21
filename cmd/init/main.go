@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/TheRealSibasishBehera/init_go/internal/config"
+	"github.com/TheRealSibasishBehera/init-go/internal/config"
 )
 
 const DefaultConfigPath = "/fly/run.json"
@@ -120,4 +120,3 @@ func validatePID1() error {
 	}
 	return nil
 }
-

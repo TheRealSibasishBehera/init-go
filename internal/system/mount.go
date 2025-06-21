@@ -4,7 +4,7 @@ package system
 
 import (
 	"fmt"
-	config "github.com/TheRealSibasishBehera/init_go/internal/config"
+	config "github.com/TheRealSibasishBehera/init-go/internal/config"
 	"golang.org/x/sys/unix"
 	"os"
 	"os/exec"
