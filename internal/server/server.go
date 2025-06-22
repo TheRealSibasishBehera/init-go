@@ -1,17 +1,24 @@
 package server
 
 import (
-	"net/http"
-
 	mux "github.com/gorilla/mux"
 	"github.com/mdlayher/vsock"
+	"net/http"
+	"sync"
 )
 
 const (
 	VSockPort = 1000
 )
 
-func StartServer() {
+func NewAPIHandler(waitPidMutex *sync.Mutex, envs map[string]string) *APIHandler {
+	return &APIHandler{
+		waitPidMutex: waitPidMutex,
+		envs:         envs,
+	}
+}
+
+func StartVSocServer(waitPidMutex *sync.Mutex, envs map[string]string) {
 	listener, err := vsock.Listen(VSockPort, nil)
 	if err != nil {
 		panic("Failed to start vsock listener: " + err.Error())
@@ -19,22 +26,24 @@ func StartServer() {
 	defer listener.Close()
 
 	router := NewRouter()
-	setupRoutes(router)
+	setupRoutes(router, waitPidMutex, envs)
 	if err := http.Serve(listener, router); err != nil {
 		panic("Failed to start HTTP server: " + err.Error())
 	}
 }
 
-func setupRoutes(r *mux.Router) {
+func setupRoutes(r *mux.Router, waitPidMutex *sync.Mutex, envs map[string]string) {
 	r.HandleFunc("/status", statusHandler).Methods("GET")
 
 	v1 := r.PathPrefix("/v1").Subrouter()
-	setupAPIRoutes(v1)
+	setupAPIRoutes(v1, waitPidMutex, envs)
 }
 
-func setupAPIRoutes(r *mux.Router) {
+func setupAPIRoutes(r *mux.Router, waitPidMutex *sync.Mutex, envs map[string]string) {
+	handler := NewAPIHandler(waitPidMutex, envs)
+
 	r.HandleFunc("/sysinfo", sysHandler).Methods("GET")
-	// r.HandleFunc("/exec", execHandler).Methods("GET")
+	r.HandleFunc("/exec", handler.ExecHandler).Methods("POST")
 	// r.HandleFunc("/ws", webSocketHandler).Methods("GET")
 }
 
