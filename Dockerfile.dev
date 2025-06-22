@@ -1,0 +1,22 @@
+# Development Dockerfile for testing and building
+FROM golang:1.24-alpine AS dev
+
+# Install development tools
+RUN apk add --no-cache \
+    git \
+    make \
+    ca-certificates \
+    bash
+
+# Set working directory
+WORKDIR /app
+
+# Copy go mod files first for better caching
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Default command for development
+CMD ["make", "test"]
