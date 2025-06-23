@@ -7,6 +7,7 @@ import (
 	
 	"github.com/TheRealSibasishBehera/init-go/internal/exec"
 	system "github.com/TheRealSibasishBehera/init-go/internal/system"
+	"github.com/TheRealSibasishBehera/init-go/internal/websocket"
 )
 
 func statusHandler(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +44,6 @@ func (h *APIHandler) ExecHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	// Validate request
 	if len(req.Cmd) == 0 {
 		http.Error(w, "Command cannot be empty", http.StatusBadRequest)
 		return
@@ -60,4 +60,8 @@ func (h *APIHandler) ExecHandler(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(response); err != nil {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 	}
+}
+
+func (h *APIHandler) WSExecHandler(w http.ResponseWriter, r *http.Request) {
+	websocket.HandleWSExec(w, r, h.envs, h.waitPidMutex)
 }

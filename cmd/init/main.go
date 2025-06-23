@@ -34,13 +34,11 @@ func main() {
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGTERM, syscall.SIGCHLD, syscall.SIGINT)
 
-	// Start VSOCK server
 	go func() {
 		server.StartVSocServer(&waitPidMutex, cfg.ExtraEnv)
 	}()
 	log.Printf("Started VSOCK server on port %d", server.VSockPort)
 
-	// Start child application
 	var cmd *exec.Cmd
 	if command := cfg.GetCommand(); len(command) > 0 {
 		cmd = exec.Command(command[0], command[1:]...)
@@ -59,7 +57,6 @@ func main() {
 
 	log.Println("Init system ready, entering main loop...")
 
-	// Main signal handling loop
 	for sig := range signals {
 		switch sig {
 		case syscall.SIGTERM, syscall.SIGINT:

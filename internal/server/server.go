@@ -44,7 +44,7 @@ func setupAPIRoutes(r *mux.Router, waitPidMutex *sync.Mutex, envs map[string]str
 
 	r.HandleFunc("/sysinfo", sysHandler).Methods("GET")
 	r.HandleFunc("/exec", handler.ExecHandler).Methods("POST")
-	// r.HandleFunc("/ws", webSocketHandler).Methods("GET")
+	r.HandleFunc("/ws/exec", handler.WSExecHandler).Methods("GET")
 }
 
 func NewRouter() *mux.Router {
